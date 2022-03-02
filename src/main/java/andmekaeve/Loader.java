@@ -38,7 +38,9 @@ public class Loader {
                 if (prev != null && !prev.equals(current)) {
                     if (map.containsKey(current)) {
                         iteration_count++;
-                        current = "%s_%s".formatted(String.valueOf(iteration_count), String.valueOf(row.getCell(0)));
+                        current = "%s_%s".formatted(String.valueOf(iteration_count),
+                                String.valueOf(row.getCell(0))
+                        );
                     }
                 }
 
@@ -48,7 +50,18 @@ public class Loader {
                 List<String> currentList = map.get(current);
                 for (Cell cell : row) {
                     if (i != 0) {
-                        currentList.add(String.valueOf(cell).replace(" ", ""));
+                        currentList.add(String.valueOf(cell)
+                                        .toUpperCase(Locale.ROOT)
+                                .replace(" ", "")
+                                        .replace("-", "")
+                                .replace("/", "")
+                                .replace(".", "")
+                                .replace("Ä", "A")
+                                .replace("Ö", "O")
+                                .replace("Ü", "U")
+                                .replace("Õ", "O")
+                                .replace("Š", "S")
+                        );
                     }
                     i++;
                 }
@@ -62,13 +75,15 @@ public class Loader {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filepath))) {
             String a = null;
             for (List<String> items: map.values()) {
-                a = "%s\n".formatted(items.toString()
-                                .replace(" ", "")
-                                .replace(",", " ")
+                a = "%s".formatted(items.toString()
+                                .replace(", ,","")
+                                .replace(",", "")
                                 .replace("[", "")
                                 .replace("]", ""))
                         .toUpperCase(Locale.ROOT);
+                System.out.println(a);
                 writer.write(a);
+                writer.newLine();
             }
         } catch (IOException e) {
             System.out.println("Error writing file:" + e.getMessage());
@@ -80,8 +95,8 @@ public class Loader {
 
 
     public static void main(String[] args) throws IOException {
-        String filepath = "/home/peeter/IdeaProjects/iti0301-2021/Tests/src/main/resources/tshekid.xlsx";
-        String writableFilePath = "/home/peeter/IdeaProjects/iti0301-2021/Tests/src/main/resources/w.txt";
+        String filepath = "/home/peeter/IdeaProjects/Tests/src/main/resources/tshekid.xlsx";
+        String writableFilePath = "/home/peeter/IdeaProjects/Tests/src/main/resources/input2.txt";
         Loader loader = new Loader(filepath);
         loader.formatFileToHashMap();
         loader.writeFile(writableFilePath);
