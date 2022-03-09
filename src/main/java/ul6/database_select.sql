@@ -111,3 +111,11 @@ GROUP BY dst_address, outputs.tx_id, counts
 ORDER BY counts DESC
 
 
+--16
+SELECT transactions.id, transactions.hash, transactions.block_id
+FROM transactions, (
+                SELECT tx_id
+                FROM outputs
+                WHERE outputs.dst_address = '17abzUBJr7cnqfnxnmznn8W38s9f9EoXiq'
+    ) as out
+WHERE transactions.id = out.tx_id
