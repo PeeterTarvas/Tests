@@ -47,21 +47,21 @@ WHERE outputs.tx_id = inputs.tx_id AND transactions.id = inputs.tx_id AND transa
 GROUP BY transactions.id, inputs.tx_id, transactions.block_id, transactions.hash
 ORDER BY SUM(count + input) DESC;
 
-SELECT transactions.id, transactions.hash, transactions.block_id
-FROM transactions,
+SELECT input.tx_id,  SUM(input.count + output.count) as counts
+FROM
      (SELECT COUNT(inputs.tx_id) AS count, inputs.tx_id
       FROM inputs
       GROUP BY inputs.tx_id
-      ORDER BY count
      ) AS input,
-    (SELECT COUNT(outputs.tx_id) AS count, outputs.tx_id
-     FROM outputs
-     GROUP BY outputs.tx_id
-     ORDER BY count
-        ) AS output
-WHERE input.tx_id = transactions.id AND output.tx_id = transactions.id
-GROUP BY transactions.id, transactions.hash, transactions.block_id
-ORDER BY SUM(input.count + output.count);
+     (SELECT COUNT(outputs.tx_id) AS count, outputs.tx_id
+      FROM outputs
+      GROUP BY outputs.tx_id
+     ) AS output
+WHERE output.tx_id = input.tx_id
+GROUP BY input.tx_id
+ORDER BY counts DESC;
+
+
 
 
 --6
