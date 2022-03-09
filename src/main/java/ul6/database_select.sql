@@ -34,17 +34,34 @@ WITH outpts AS (
     FROM outputs
     group by tx_id
     ORDER BY count DESC
+    LIMIT 10
 )   SELECT transactions.hash, transactions.id, count
     FROM transactions, outpts, blocks
     WHERE transactions.id = outpts.tx_id AND transactions.block_id=blocks.id
     ORDER BY count DESC;
 
 --5
-SELECT  COUNT(outputs.tx_id) AS count,  transactions.id, transactions.hash, transactions.block_id
+SELECT  COUNT(outputs.tx_id) AS count, COUNT(inputs.tx_id) AS input,  transactions.id, transactions.hash, transactions.block_id
 FROM outputs, inputs, transactions
 WHERE outputs.tx_id = inputs.tx_id AND transactions.id = inputs.tx_id AND transactions.id = outputs.tx_id
 GROUP BY transactions.id, inputs.tx_id, transactions.block_id, transactions.hash
-ORDER BY count DESC;
+ORDER BY SUM(count + input) DESC;
+
+SELECT transactions.id, transactions.hash, transactions.block_id
+FROM transactions,
+     (SELECT COUNT(inputs.tx_id) AS count, inputs.tx_id
+      FROM inputs
+      GROUP BY inputs.tx_id
+      ORDER BY count
+     ) AS input,
+    (SELECT COUNT(outputs.tx_id) AS count, outputs.tx_id
+     FROM outputs
+     GROUP BY outputs.tx_id
+     ORDER BY count
+        ) AS output
+WHERE input.tx_id = transactions.id AND output.tx_id = transactions.id
+GROUP BY transactions.id, transactions.hash, transactions.block_id
+ORDER BY SUM(input.count + output.count);
 
 
 --6
@@ -83,7 +100,7 @@ WITH inpt AS (
 --9
 SELECT dst_address AS address
 FROM outputs
-WHERE outputs.tx_id = 7757
+WHERE outputs.tx_id = 6676
 GROUP BY dst_address ;
 
 --11
