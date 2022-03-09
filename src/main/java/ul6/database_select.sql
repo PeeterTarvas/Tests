@@ -41,12 +41,6 @@ WITH outpts AS (
     ORDER BY count DESC;
 
 --5
-SELECT  COUNT(outputs.tx_id) AS count, COUNT(inputs.tx_id) AS input,  transactions.id, transactions.hash, transactions.block_id
-FROM outputs, inputs, transactions
-WHERE outputs.tx_id = inputs.tx_id AND transactions.id = inputs.tx_id AND transactions.id = outputs.tx_id
-GROUP BY transactions.id, inputs.tx_id, transactions.block_id, transactions.hash
-ORDER BY SUM(count + input) DESC;
-
 SELECT input.tx_id,  SUM(input.count + output.count) as counts
 FROM
      (SELECT COUNT(inputs.tx_id) AS count, inputs.tx_id
