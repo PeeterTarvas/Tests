@@ -10,11 +10,6 @@ WITH ts AS (
     WHERE ts.block_id = blocks.id
     ORDER BY ts.counted DESC;
 
---2 unixi aja kohaselt on koik tehingud tehtud 2009, nii et tegin alates 2009 aastast
-SELECT hash, id,time, date_part('year', to_timestamp(time)) AS tn
-    FROM blocks
-    WHERE date_part('year', to_timestamp(time)) = '2009'
-    ORDER BY tn DESC;--
 
 --3
 WITH inpts AS (
@@ -118,4 +113,4 @@ FROM transactions, (
                 FROM outputs
                 WHERE outputs.dst_address = '17abzUBJr7cnqfnxnmznn8W38s9f9EoXiq'
     ) as out
-WHERE transactions.id = out.tx_id
+WHERE transactions.id = out.tx_id;
